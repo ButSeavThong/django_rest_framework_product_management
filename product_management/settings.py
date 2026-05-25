@@ -119,11 +119,40 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
 REST_FRAMEWORK = {
+    # Tells DRF which class to use for authenticating requests
+    # We will create this class in the next step
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'products.authentication.WSO2Authentication',
+    ],
+
+    # Every endpoint requires a logged-in (authenticated) user
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
-    ],
+}
+
+# ─────────────────────────────────────────
+# WSO2 Identity Server Configuration
+# ─────────────────────────────────────────
+WSO2_CONFIG = {
+    # The URL Django uses to fetch WSO2's public signing keys
+    # Django needs this to verify that a JWT was really signed by WSO2
+    'JWKS_URL': 'https://localhost:9443/oauth2/jwks',
+
+    # The issuer value — must exactly match the 'iss' field inside the JWT
+    # WSO2 puts this value in every token it creates
+    'ISSUER': 'https://localhost:9443/oauth2/token',
+
+    # Your application's Client ID from WSO2
+    'CLIENT_ID': 'PAUhNL6j4k572WJBx7fHD0ysAPca',
+
+    # Set to False only in local development (WSO2 uses self-signed cert)
+    # ALWAYS set to True (or path to cert) in production
+    'VERIFY_SSL': False,
 }
